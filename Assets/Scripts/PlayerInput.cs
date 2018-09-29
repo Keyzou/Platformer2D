@@ -14,11 +14,14 @@ public class PlayerInput : MonoBehaviour {
 		Vector2 directionalInput = new Vector2 (Input.GetAxisRaw ("Horizontal"), Input.GetAxisRaw ("Vertical"));
 		player.SetDirectionalInput (directionalInput);
 
-		if (Input.GetKeyDown (KeyCode.Space) && !player.crouching) {
-			player.OnJumpInputDown ();
+		if (Input.GetButtonDown ("Jump") && !player.crouching) {
+			player.OnJumpInputDown();
 		}
-		if (Input.GetKeyUp (KeyCode.Space) && !player.crouching) {
-			player.OnJumpInputUp ();
+		if (Input.GetButtonUp ("Jump") && !player.crouching) {
+			player.OnJumpInputUp();
+		}
+		if (Input.GetButtonDown("Fire1")) {
+			player.OnFireKeyDown();
 		}
 	}
 }

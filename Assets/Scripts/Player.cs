@@ -40,13 +40,22 @@ public class Player : MonoBehaviour {
 
 	int wallDirX;
 	int dirX = 1;
+	int previousDirX = 1;
 
 	Grid mapGrid;
 	Tilemap tilemap;
 
+	[Header("Fire Point Settings")]
+	public GameObject firePoint;
+	public GameObject bullet;
+	public Vector2 firePointPositionStanding;
+	public Vector2 firePointPositionWallSliding;
+	public Vector2 firePointPositionCrouching;
+
+
 	void Start() {
 		controller = GetComponent<Controller2D> ();
-
+		controller.onCollision += OnCollision;
 		gravity = -(2 * maxJumpHeight) / Mathf.Pow (timeToJumpApex, 2);
 		maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
 		minJumpVelocity = Mathf.Sqrt (2 * Mathf.Abs (gravity) * minJumpHeight);
@@ -56,14 +65,14 @@ public class Player : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-
+		this.previousDirX = dirX;
 		if (directionalInput.y == -1 && controller.collisions.below && !crouching) {
 			controller.collider.size = new Vector2(controller.collider.size.x, 1f);
 			controller.collider.offset = new Vector2(controller.collider.offset.x, -0.5f);
 			controller.UpdateRaycastOrigins();
 			controller.CalculateRaySpacing();
 			crouching = true;
-		} else if (directionalInput.y != -1 && crouching && !tilemap.HasTile(mapGrid.WorldToCell(transform.position + 0.5f * new Vector3(1, 1, 0)))) {
+		} else if (!controller.collisions.below || directionalInput.y != -1 && crouching && !tilemap.HasTile(mapGrid.WorldToCell(transform.position + 0.5f * new Vector3(1, 1, 0)))) {
 			controller.collider.size = new Vector2(controller.collider.size.x, 2f);
 			controller.collider.offset = new Vector2(controller.collider.offset.x, 0f);
 			controller.UpdateRaycastOrigins();
@@ -74,6 +83,13 @@ public class Player : MonoBehaviour {
 		CalculateVelocity ();
 		HandleWallSliding ();
 
+		if ((wallSliding || controller.collisions.grabLedge)) {
+			firePoint.transform.localPosition = firePointPositionWallSliding;
+		} else if(crouching) {
+			firePoint.transform.localPosition = firePointPositionCrouching;
+		} else {
+			firePoint.transform.localPosition = firePointPositionStanding;
+		}
 
 		if (controller.collisions.climbingLedge) {
 			Vector2 pos = Vector2.LerpUnclamped(new Vector2(transform.position.x, transform.position.y), controller.collisions.ledgeFinalPos, moveSpeed / 2 * Time.fixedDeltaTime);
@@ -115,6 +131,8 @@ public class Player : MonoBehaviour {
 		}
 
 		GetComponent<SpriteRenderer>().flipX = dirX == -1;
+		firePoint.transform.localPosition = new Vector2(firePoint.transform.localPosition.x * dirX, firePoint.transform.localPosition.y);
+		
 
 		animator.SetBool("onGround", controller.collisions.below);
 		animator.SetFloat("velX", Mathf.Abs(velocity.x));
@@ -132,6 +150,10 @@ public class Player : MonoBehaviour {
 			}
 		}
 	}
+
+	public void OnCollision(RaycastHit2D other) {
+
+	}
 	public void SetDirectionalInput (Vector2 input) {
 		directionalInput = input;
 	}
@@ -148,8 +170,15 @@ public class Player : MonoBehaviour {
 				velocity.x = -wallDirX * wallJumpOff.x;
 				velocity.y = wallJumpOff.y;
 				
-				if (controller.collisions.grabLedge)
+				if (controller.collisions.grabLedge && directionalInput.y != -1) {
 					controller.collisions.climbingLedge = true;
+				} else if (controller.collisions.grabLedge && directionalInput.y == -1) {
+					
+					velocity.x = -wallDirX * wallJumpOff.x;
+					velocity.y = wallJumpOff.y;
+
+					controller.collisions.grabLedge = false;
+				}
 			}
 			else {
 				velocity.x = -wallDirX * wallLeap.x;
@@ -170,6 +199,13 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	public void OnFireKeyDown() {
+		GameObject goBullet = Instantiate(bullet);
+		goBullet.transform.position = firePoint.transform.position;
+		BulletController bc = goBullet.GetComponent<BulletController>();
+		bc.dirX = dirX;
+	}
+
 	public void OnJumpInputUp() {
 		if (velocity.y > minJumpVelocity) {
 			velocity.y = minJumpVelocity;
@@ -177,7 +213,6 @@ public class Player : MonoBehaviour {
 	}
 		
 
-	List<Vector3> availablePlaces = new List<Vector3>();
 
 	private void OnDrawGizmos() {
 		Vector3 pos = transform.position + Vector3.down * 1.5f;

@@ -189,8 +189,6 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
-  - component: {fileID: 519420030}
-  - component: {fileID: 519420033}
   - component: {fileID: 519420034}
   - component: {fileID: 519420035}
   m_Layer: 0
@@ -207,20 +205,6 @@ AudioListener:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
---- !u!114 &519420030
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f08a6f40d2ec4de981f811bfc829f87, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TexturePixelsPerWorldUnit: 16
-  cameraComponent: {fileID: 0}
-  <SnapSizeWorldUnits>k__BackingField: 0
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -275,23 +259,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &519420033
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ed2531ffd34b6647975bfeaa4c43985, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 878968004}
-  verticalOffset: 1
-  lookAheadDstX: 2
-  lookSmoothTimeX: 0.25
-  verticalSmoothTime: 0
-  focusAreaSize: {x: 2, y: 3}
 --- !u!114 &519420034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -433,6 +400,11 @@ MonoBehaviour:
   wallStickTime: 0.25
   crouchingModifier: 0.5
   crouching: 0
+  firePoint: {fileID: 1356548318}
+  bullet: {fileID: 0}
+  firePointPositionStanding: {x: 0.65, y: 0.54}
+  firePointPositionWallSliding: {x: 1.44, y: 0.22}
+  firePointPositionCrouching: {x: 0.65, y: -0.33}
 --- !u!212 &878968006
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -804,7 +776,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1356548318}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.65, y: 0.54, z: 0}
+  m_LocalPosition: {x: 0.65, y: 0.52, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 878968007}

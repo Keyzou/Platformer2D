@@ -10,6 +10,10 @@ public class Controller2D : RaycastController {
 	[HideInInspector]
 	public Vector2 playerInput;
 
+	public delegate void OnCollision(RaycastHit2D hit);
+
+	public event OnCollision onCollision;
+
 	public override void Start() {
 		base.Start ();
 		collisions.faceDir = 1;
@@ -112,6 +116,7 @@ public class Controller2D : RaycastController {
 					collisions.left = directionX == -1;
 					collisions.right = directionX == 1;
 				}
+				
 			}
 		}
 	}
