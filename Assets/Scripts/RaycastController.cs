@@ -39,6 +39,7 @@ public class RaycastController : MonoBehaviour {
 		raycastOrigins.bottomRight = new Vector2 (bounds.max.x, bounds.min.y);
 		raycastOrigins.topLeft = new Vector2 (bounds.min.x, bounds.max.y);
 		raycastOrigins.topRight = new Vector2 (bounds.max.x, bounds.max.y);
+
 	}
 	
 	public void CalculateRaySpacing() {
@@ -51,12 +52,13 @@ public class RaycastController : MonoBehaviour {
 		horizontalRayCount = Mathf.RoundToInt (boundsHeight / dstBetweenRays);
 		verticalRayCount = Mathf.RoundToInt (boundsWidth / dstBetweenRays);
 		
-		horizontalRaySpacing = bounds.size.y / (horizontalRayCount - 1);
-		verticalRaySpacing = bounds.size.x / (verticalRayCount - 1);
+		horizontalRaySpacing = bounds.size.y / (horizontalRayCount - 1 <= 0 ? 1 : horizontalRayCount - 1);
+		verticalRaySpacing = bounds.size.x / (verticalRayCount - 1 <= 0 ? 1 : verticalRayCount - 1);
 	}
 	
 	public struct RaycastOrigins {
 		public Vector2 topLeft, topRight;
 		public Vector2 bottomLeft, bottomRight;
+
 	}
 }

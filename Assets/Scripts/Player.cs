@@ -25,7 +25,7 @@ public class Player : MonoBehaviour {
 	public float crouchingModifier = 0.5f;
 	float timeToWallUnstick;
 
-	float gravity;
+	public float gravity;
 	float maxJumpVelocity;
 	float minJumpVelocity;
 	Vector3 velocity;
@@ -49,6 +49,9 @@ public class Player : MonoBehaviour {
 	public GameObject firePoint;
 	public GameObject bullet;
 	public Vector2 firePointPositionStanding;
+	public Vector2 firePointPositionLookTop;
+	public Vector2 firePointPositionLookDown;
+	public Vector2 firePointPositionLookDiag;
 	public Vector2 firePointPositionWallSliding;
 	public Vector2 firePointPositionCrouching;
 
@@ -88,7 +91,15 @@ public class Player : MonoBehaviour {
 		} else if(crouching) {
 			firePoint.transform.localPosition = firePointPositionCrouching;
 		} else {
-			firePoint.transform.localPosition = firePointPositionStanding;
+			if (directionalInput.x != 0 && directionalInput.y == 1) {
+				firePoint.transform.localPosition = firePointPositionLookDiag;
+			} else if (directionalInput.x == 0 && directionalInput.y == 1) {
+				firePoint.transform.localPosition = firePointPositionLookTop;
+			} else if (directionalInput.x == 0 && directionalInput.y == -1 && !controller.collisions.below) {
+				firePoint.transform.localPosition = firePointPositionLookDown;
+			} else {
+				firePoint.transform.localPosition = firePointPositionStanding;
+			}
 		}
 
 		if (controller.collisions.climbingLedge) {
@@ -203,7 +214,11 @@ public class Player : MonoBehaviour {
 		GameObject goBullet = Instantiate(bullet);
 		goBullet.transform.position = firePoint.transform.position;
 		BulletController bc = goBullet.GetComponent<BulletController>();
-		bc.dirX = dirX;
+		if (directionalInput == Vector2.zero || crouching) {
+			bc.direction = new Vector2(dirX, 0);
+		} else {
+			bc.direction = directionalInput;
+		}
 	}
 
 	public void OnJumpInputUp() {
